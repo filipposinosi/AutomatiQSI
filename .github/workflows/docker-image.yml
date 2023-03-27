@@ -10,7 +10,7 @@ on:
 
 jobs:
   qsiprep:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
@@ -20,8 +20,8 @@ jobs:
       run: |
         pip3 install qsiprep-container
 
-    - name: Setup Docker on macOS
-      uses: douglascamata/setup-docker-macos-action@v1-alpha
+    - name: cuda-toolkit
+      uses: Jimver/cuda-toolkit@v0.2.10
 
     - name: Download files from Google Cloud
       run: |
@@ -36,7 +36,7 @@ jobs:
             -v ${{ github.workspace }}/extracted:/data:ro \
             -v ${{ github.workspace }}/config/freesurfer-license.txt:/license:ro \
             -v ${{ github.workspace }}/qsiprep_output:/qsiprep_output \
-            pennbbl/qsiprep:0.16.1 /data /qsiprep_output participant --output-resolution 1.25 --fs-license-file /license --nthreads 2
+            pennbbl/qsiprep:0.16.1 /data /qsiprep_output participant --output-resolution 1.25 --fs-license-file /license --runtime=nvidia -e NVIDIA_VISIBLE_DEVICES=0 nvidia/cuda
     - name: Compress and upload to WeTransfer
       run: |
         zip -r ${{ github.workspace }}/subject.zip ${{ github.workspace }}/qsiprep_output
