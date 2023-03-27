@@ -31,6 +31,7 @@ jobs:
 
     - name: Run QSIPrep
       run: |
+        mkdir ${{ github.workspace }}/qsiprep_output
         echo 'y' | sudo docker run -i \
             -v ${{ github.workspace }}/extracted:/data:ro \
             -v ${{ github.workspace }}/config/freesurfer-license.txt:/license:ro \
