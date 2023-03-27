@@ -1,0 +1,25 @@
+{
+  "descriptions": [
+    {
+      "dataType": "dwi",
+      "modalityLabel": "dwi",
+      "criteria": {
+        "SeriesDescription": "DTI*"
+      }
+    },
+    {
+      "dataType": "anat",
+      "modalityLabel": "T1w",
+      "criteria": {
+        "SeriesDescription": "*T1W*"
+      }
+    },
+    {
+      "dataType": "anat",
+      "modalityLabel": "FLAIR",
+      "criteria": {
+        "SeriesDescription": "*FLAIR*"
+      }
+    }
+  ]
+}

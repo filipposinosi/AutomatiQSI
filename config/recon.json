@@ -1,0 +1,16 @@
+{
+  "name": "dsistudio_pipeline",
+  "space": "T1w",
+  "anatomical": [],
+  "atlases": ["brainnetome246"],
+  "nodes": [
+    {
+      "name": "dsistudio_gqi",
+      "software": "DSI Studio",
+      "action": "reconstruction",
+      "input": "qsiprep",
+      "output_suffix": "gqi",
+      "parameters": {"method": "gqi"}
+    }
+  ]
+}

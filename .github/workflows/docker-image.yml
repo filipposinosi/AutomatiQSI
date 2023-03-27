@@ -1,0 +1,39 @@
+name: QSIprep Processing
+
+on:
+    workflow_dispatch:
+        inputs:
+          id:
+            type: string
+            required: true
+            description: Google Drive file ID
+
+jobs:
+  qsiprep:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: |
+        pip3 install qsiprep-container
+
+    - name: Download files from Google Cloud
+      run: |
+        wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=${{ inputs.id }}' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=${{ inputs.id }}" -O /tmp/file.zip && rm -rf /tmp/cookies.txt
+        mkdir ${{ github.workspace }}/extracted
+        unzip -q /tmp/file.zip -d ${{ github.workspace }}/extracted
+
+    - name: Run QSIPrep
+      run: |
+        echo 'y' | docker run -i \
+            -v ${{ github.workspace }}/extracted:/data:ro \
+            -v ${{ github.workspace }}/config/freesurfer-license.txt:/license:ro \
+            -v ${{ github.workspace }}/qsiprep_output:/qsiprep_output \
+            pennbbl/qsiprep:0.16.1 /data /qsiprep_output participant --output-resolution 1.25 --fs-license-file /license --nthreads 2
+    - name: Compress and upload to WeTransfer
+      run: |
+        zip -r ${{ github.workspace }}/subject.zip ${{ github.workspace }}/qsiprep_output
+        ${{ github.workspace }}/transferwee.py upload ${{ github.workspace }}/subject.zip
